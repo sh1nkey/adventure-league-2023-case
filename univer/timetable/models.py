@@ -17,17 +17,19 @@ class Week(models.Model):
         verbose_name_plural = "Расписания по неделям"
 
 
+PAIR_NUMBER_CHOICE = (
+    (1, "8.30 - 10.10"),
+    (2, "10.20 - 12.00"),
+    (3, "12.20 - 14.00"),
+    (4, "14.10 - 15.50"),
+    (5, "16.00 - 17.40"),
+    (6, "18.00 - 19.30"),
+    (7, "19.40 - 21.10"),
+    (8, "21.20 - 22.50"),
+)
+
+
 class SubjTime(models.Model):
-    PAIR_NUMBER_CHOICE = (
-        (1, "8.30 - 10.10"),
-        (2, "10.20 - 12.00"),
-        (3, "12.20 - 14.00"),
-        (4, "14.10 - 15.50"),
-        (5, "16.00 - 17.40"),
-        (6, "18.00 - 19.30"),
-        (7, "19.40 - 21.10"),
-        (8, "21.20 - 22.50"),
-    )
     pair_number = models.IntegerField(
         choices=PAIR_NUMBER_CHOICE, null=True, verbose_name="Номер пары (порядковый)"
     )
@@ -43,15 +45,17 @@ class SubjTime(models.Model):
         verbose_name_plural = "Ячейки расписания"
 
 
+DAYS_OF_THE_WEEK_CHOICE = (
+    (1, "Понедельник"),
+    (2, "Вторник"),
+    (3, "Среда"),
+    (4, "Четверг"),
+    (5, "Пятница"),
+    (6, "Суббота"),
+)
+
+
 class Day(models.Model):
-    DAYS_OF_THE_WEEK_CHOICE = (
-        (1, "Понедельник"),
-        (2, "Вторник"),
-        (3, "Среда"),
-        (4, "Четверг"),
-        (5, "Пятница"),
-        (6, "Суббота"),
-    )
     day_of_the_week = models.IntegerField(
         verbose_name="День недели",
         choices=DAYS_OF_THE_WEEK_CHOICE,

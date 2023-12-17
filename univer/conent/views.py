@@ -1,21 +1,24 @@
-from django.db.models import Subquery
-from django.http import JsonResponse
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import CreateAPIView, ListAPIView
-
-from drf_yasg import openapi
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from conent.models import Tasks, TaskResult, StudyMaterials, Subjects
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 from conent.serializers import (
     TaskResultSerializer,
     AnswerSerializer,
     TasksSerializer,
 )
-from conent.utils import get_single_task, send_answers, get_subjects_progress, sub_task_material_get, watch_material
-from users.models import StudentProfile
+from conent.utils import (
+    get_single_task,
+    send_answers,
+    get_subjects_progress,
+    sub_task_material_get,
+    watch_material,
+    get_tasks
+)
+
 
 
 class SubjectTaskMaterialGet(APIView):
@@ -92,18 +95,4 @@ class TasksGet(ListAPIView):
     serializer_class = TasksSerializer
 
     def list(self, request, *args, **kwargs):
-        try:
-            user = self.request.user
-            user_profile = StudentProfile.objects.select_related("group").get(user=user)
-
-            tasks_with_results = TaskResult.objects.values("task_id").distinct()
-            queryset = list(
-                Tasks.objects.filter(groups=user_profile.group)
-                .select_related("subject__name")
-                .exclude(id__in=Subquery(tasks_with_results))
-                .values("id", "name", "subject__name")
-            )
-
-            return JsonResponse(queryset, safe=False, status=200)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
+        return get_tasks(self.request.user)

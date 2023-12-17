@@ -1,9 +1,10 @@
 from django.db import transaction
-from django.db.models import Q, F, Count, Case, When, BooleanField, Value
+from django.db.models import Q, F, Count, Case, When, BooleanField, Value, Subquery
 from django.http import JsonResponse
 
 from conent.models import Tasks, Questions, TaskResult, Answer, Subjects, StudyMaterials
 from conent.serializers import TaskResultSerializer
+from timetable.serializer import StudentSurnameSerializer
 from users.models import StudentProfile
 
 
@@ -177,3 +178,37 @@ def watch_material(user, material_id):
         return JsonResponse(send_data, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
+
+
+def get_tasks(user):
+    try:
+        user_profile = StudentProfile.objects.select_related("group").get(user=user)
+
+        tasks_with_results = TaskResult.objects.values("task_id").distinct()
+        queryset = list(
+            Tasks.objects.filter(groups=user_profile.group)
+            .select_related("subject__name")
+            .exclude(id__in=Subquery(tasks_with_results))
+            .values("id", "name", "subject__name")
+        )
+
+        return JsonResponse(queryset, safe=False, status=200)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+def marking_visitors(data):
+    try:
+        serializer = StudentSurnameSerializer(data=data, many=True)
+        if serializer.is_valid():
+            students = StudentProfile.objects.filter(
+                user__surname__in=[student["student__surname"] for student in data]
+            )
+
+            students.update(quantity_of_visiting=F("quantity_of_visiting") + 1)
+            return JsonResponse(
+                {"result": f"Отмечено {students.count()} человек"}, status=200
+            )
+    except Exception as e:
+        return JsonResponse({'error' : str(e)}, status=400)

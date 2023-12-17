@@ -33,20 +33,9 @@ application_router = DefaultRouter()
 application_router.register("", ApplicationViewSet, basename="application")
 
 
-def redirect_home(request):
-    return redirect("/home")
-
-
-class Home(APIView):
-    def get(self, request):
-        return Response(True)
-
-
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", redirect_home),
     path("application/", include(application_router.urls)),
-    path("home", Home.as_view(), name="home-redirect"),
     path(
         "docs/",
         schema_view.with_ui("swagger", cache_timeout=0),
