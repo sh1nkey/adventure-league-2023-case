@@ -1,0 +1,15 @@
+FROM nginx:1.25
+
+# Создание нового пользователя
+RUN useradd -ms /bin/bash newuser
+
+# Установка пароля для нового пользователя newuser
+RUN echo 'newuser:уникальный_пароль' | chpasswd
+
+# Установка sudo и добавление newuser в группу sudo, чтобы иметь возможность использовать команду sudo
+RUN apt-get update && apt-get install -y sudo
+RUN usermod -aG sudo newuser
+
+# Копирование конфигурационного файла nginx
+COPY nginx.conf /etc/nginx/conf.d
+COPY ./static /etc/nginx/static
