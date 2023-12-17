@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Q, Count, Case, When, BooleanField, Value
+from django.db.models import Q, F, Count, Case, When, BooleanField, Value
 from django.http import JsonResponse
 
 from conent.models import Tasks, Questions, TaskResult, Answer, Subjects, StudyMaterials
@@ -143,5 +143,37 @@ def sub_task_material_get(user, subject_id):
         list_to_send.sort(key=lambda x: x['done_or_not'])
 
         return JsonResponse(list_to_send, safe=False, status=200)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+def watch_material(user, material_id):
+    try:
+        material = (
+            StudyMaterials.objects
+            .filter(id=material_id)
+            .annotate(
+                watched=Case(
+                    When(who_watched=user, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField()
+                ),
+                subject_name=F('subject__name')
+            )
+            .first()
+
+        )
+
+        if not material.watched:
+            material.who_watched.add(user)
+            material.save()
+
+        send_data = {
+            "name": material.name,
+            "subject": material.subject_name,
+            "text": material.text
+        }
+
+        return JsonResponse(send_data, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)

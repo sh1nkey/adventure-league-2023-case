@@ -14,7 +14,7 @@ from conent.serializers import (
     AnswerSerializer,
     TasksSerializer,
 )
-from conent.utils import get_single_task, send_answers, get_subjects_progress, sub_task_material_get
+from conent.utils import get_single_task, send_answers, get_subjects_progress, sub_task_material_get, watch_material
 from users.models import StudentProfile
 
 
@@ -84,25 +84,7 @@ class GetStudyMaterial(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        try:
-            study_material = StudyMaterials.objects.select_related("subject").get(
-                id=self.kwargs.get("material_id")
-            )
-            user = self.request.user
-
-            if user not in study_material.who_watched.all():
-                study_material.who_watched.add(user)
-                study_material.save()
-
-            send_data = {
-                "name": study_material.name,
-                "subject": study_material.subject.name,
-                "text": study_material.text,
-            }
-
-            return JsonResponse(send_data, status=200)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
+        return watch_material(self.request.user, self.kwargs.get("material_id"))
 
 
 class TasksGet(ListAPIView):
