@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from conent.models import Tasks, Questions, TaskResult, Answer, Subjects, StudyMaterials
 from conent.serializers import TaskResultSerializer
 from timetable.serializer import StudentSurnameSerializer
-from users.models import StudentProfile
+from users.models import StudentProfile, Group
 
 
 def get_single_task(id):
@@ -65,10 +65,10 @@ def send_answers(data, user, task_id):
 
 def get_subjects_progress(user):
     try:
+        group = Group.objects.get(students=user)
         subjects_data = (
-            Subjects.objects.filter(
-                tasks__in=Tasks.objects.filter(groups__students=user)
-            )
+            Subjects.objects
+            .filter(groups=group)
             .annotate(
                 watched_materials=Count(
                     "studymaterials", filter=Q(studymaterials__who_watched=user)

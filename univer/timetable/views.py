@@ -1,7 +1,5 @@
 from django.http import JsonResponse
-
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -19,6 +17,7 @@ from users.models import StudentProfile
 class ShowTimetable(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='Показ расписания')
     def get(self, request, *args, **kwargs):
         try:
             user_profile = StudentProfile.objects.get(user=self.request.user)
@@ -32,7 +31,11 @@ class ShowTimetable(APIView):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
 
-
+@extend_schema_view(
+    list=extend_schema(
+            summary="Вывод всех предметов",
+        )
+)
 class SubjectsGet(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SubjNameSerializer
@@ -42,6 +45,7 @@ class SubjectsGet(ListAPIView):
 class GroupGet(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='Вывод всех групп, у которых есть конкретный предмет')
     def get(self, request, *args, **kwargs):
         try:
             subj_name = self.request.query_params.get("subj_name")
@@ -58,6 +62,7 @@ class GroupGet(APIView):
 class StudGet(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(summary='Базовая инфа о студенте')
     def get(self, request, *args, **kwargs):
         try:
             group_name = self.request.query_params.get("group_name")
@@ -77,5 +82,6 @@ class MarkVisitors(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SubjNameSerializer(many=True)
 
+    @extend_schema(summary='Отметка посещения')
     def post(self, request, *args, **kwargs):
         return marking_visitors(request.data)

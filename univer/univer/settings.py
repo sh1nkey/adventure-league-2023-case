@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework_swagger",  # Swagger
     "rest_framework",  # Django rest framework
     "drf_spectacular",
+    'drf_spectacular_sidecar',
     "corsheaders",
     "django_filters",
     "silk",
@@ -134,6 +135,8 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
     # OTHER SETTINGS
 }
 
@@ -177,7 +180,7 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = "static/"
 
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

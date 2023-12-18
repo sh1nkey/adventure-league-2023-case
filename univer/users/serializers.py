@@ -7,7 +7,6 @@ class UserSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=30)
     surname = serializers.CharField(max_length=30)
     username = serializers.CharField(max_length=30)
-    email = serializers.EmailField()
     role = serializers.IntegerField(default=1)
 
     def validate_role(self, role):

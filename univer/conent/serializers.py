@@ -16,7 +16,7 @@ class TaskResultSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.Serializer):
-    answer_data = serializers.CharField()
+    answer_data = serializers.ListField(child=serializers.CharField())
 
 
 class StudyMaterialsSerializer(serializers.ModelSerializer):

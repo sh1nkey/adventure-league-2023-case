@@ -7,9 +7,8 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from conent.models import Tasks, StudyMaterials
-from timetable.models import Day
-from users.models import User, StudentProfile
+
+from users.models import User
 from users.serializers import UserSerializer
 
 from rest_framework_simplejwt.tokens import RefreshToken
