@@ -1,3 +1,5 @@
+from abc import ABC
+
 from rest_framework import serializers
 
 from conent.models import Tasks, TaskResult, StudyMaterials
@@ -29,3 +31,9 @@ class TasksSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     subject__name = serializers.CharField()
+
+
+class StudyMaterialSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    subject = serializers.CharField()
+    text = serializers.CharField()
