@@ -63,34 +63,45 @@ def send_answers(data, user, task_id):
         return JsonResponse({"error": str(e)}, status=400)
 
 
-
 def get_subjects_progress(user):
     try:
         subjects_data = (
-            Subjects.objects
-            .filter(tasks__in=Tasks.objects.filter(groups__students=user))
-            .annotate(
-                watched_materials=Count('studymaterials', filter=Q(studymaterials__who_watched=user)),
-                total_materials=Count('studymaterials', distinct=True),
-                done_tasks=Count('tasks', filter=Q(tasks__taskresult__student=user), distinct=True),
-                total_tasks=Count('tasks', distinct=True)
+            Subjects.objects.filter(
+                tasks__in=Tasks.objects.filter(groups__students=user)
             )
-            .values('id', 'name', 'watched_materials', 'total_materials', 'done_tasks', 'total_tasks')
+            .annotate(
+                watched_materials=Count(
+                    "studymaterials", filter=Q(studymaterials__who_watched=user)
+                ),
+                total_materials=Count("studymaterials", distinct=True),
+                done_tasks=Count(
+                    "tasks", filter=Q(tasks__taskresult__student=user), distinct=True
+                ),
+                total_tasks=Count("tasks", distinct=True),
+            )
+            .values(
+                "id",
+                "name",
+                "watched_materials",
+                "total_materials",
+                "done_tasks",
+                "total_tasks",
+            )
         )
 
         result = []
 
         for subject in subjects_data:
             success_percentage = round(
-                (subject['watched_materials'] + subject['done_tasks'])
-                / (subject['total_tasks'] + subject['total_materials']),
+                (subject["watched_materials"] + subject["done_tasks"])
+                / (subject["total_tasks"] + subject["total_materials"]),
                 1,
             )
 
             result.append(
                 {
-                    "subject_id": subject['id'],
-                    "subject": subject['name'],
+                    "subject_id": subject["id"],
+                    "subject": subject["name"],
                     "succeed_percentage": success_percentage,
                 }
             )
@@ -108,40 +119,41 @@ def sub_task_material_get(user, subject_id):
         student_group = student_profile.group
 
         tasks = (
-            Tasks.objects
-            .prefetch_related("taskresult_set")
+            Tasks.objects.prefetch_related("taskresult_set")
             .filter(subject_id=subject_id, groups=student_group)
             .annotate(
                 done_or_not=Case(
                     When(taskresult__isnull=False, then=Value(True)),
                     default=Value(False),
-                    output_field=BooleanField()
+                    output_field=BooleanField(),
                 ),
-                type=Value('test')
+                type=Value("test"),
             )
-            .order_by('done_or_not')
-            .values('id', 'type', 'name', 'done_or_not')
+            .order_by("done_or_not")
+            .values("id", "type", "name", "done_or_not")
             .distinct()
         )
 
-        study_materials = (
-            StudyMaterials.objects
-            .prefetch_related("who_watched")
-            .filter(subject_id=subject_id, group=student_group)
-            .annotate(
-                done_or_not=Case(
-                    When(who_watched=user, then=Value(True)),
-                    default=Value(False),
-                    output_field=BooleanField()
-                ),
-                type=Value('study_material')
-            )
-            .order_by('done_or_not')
-            .values('id', 'type', 'name', 'done_or_not')
+        materials_done = (
+            StudyMaterials.objects.prefetch_related("who_watched")
+            .filter(subject_id=subject_id, who_watched=user)
+            .annotate(done_or_not=Value(True), type=Value("study_material"))
+            .values("id", "name", "type", "done_or_not")
         )
 
-        list_to_send = list(tasks) + list(study_materials)
-        list_to_send.sort(key=lambda x: x['done_or_not'])
+        list_of_done = (i["id"] for i in materials_done)
+        materials_not_done = (
+            StudyMaterials.objects.filter(
+                subject_id=subject_id,
+                group=student_group,
+            )
+            .exclude(id__in=list_of_done)
+            .annotate(done_or_not=Value(False), type=Value("study_material"))
+            .values("id", "name", "type", "done_or_not")
+        )
+
+        list_to_send = list(tasks) + list(materials_not_done) + list(materials_done)
+        list_to_send.sort(key=lambda x: x["done_or_not"])
 
         return JsonResponse(list_to_send, safe=False, status=200)
     except Exception as e:
@@ -151,18 +163,16 @@ def sub_task_material_get(user, subject_id):
 def watch_material(user, material_id):
     try:
         material = (
-            StudyMaterials.objects
-            .filter(id=material_id)
+            StudyMaterials.objects.filter(id=material_id)
             .annotate(
                 watched=Case(
                     When(who_watched=user, then=Value(True)),
                     default=Value(False),
-                    output_field=BooleanField()
+                    output_field=BooleanField(),
                 ),
-                subject_name=F('subject__name')
+                subject_name=F("subject__name"),
             )
             .first()
-
         )
 
         if not material.watched:
@@ -172,13 +182,12 @@ def watch_material(user, material_id):
         send_data = {
             "name": material.name,
             "subject": material.subject_name,
-            "text": material.text
+            "text": material.text,
         }
 
         return JsonResponse(send_data, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
-
 
 
 def get_tasks(user):
@@ -208,7 +217,7 @@ def marking_visitors(data):
 
             students.update(quantity_of_visiting=F("quantity_of_visiting") + 1)
             return JsonResponse(
-                {"result": f"Отмечено {students.count()} человек"}, status=200
+                {"result": f"Отмечено {students.count()} человек"}, status=201
             )
     except Exception as e:
-        return JsonResponse({'error' : str(e)}, status=400)
+        return JsonResponse({"error": str(e)}, status=400)

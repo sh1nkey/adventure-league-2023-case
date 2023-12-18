@@ -5,7 +5,7 @@ from applications.serializers import ApplicationSerializer
 from rest_framework.response import Response
 
 
-class ApplicationViewSet(viewsets.ModelViewSet):    
+class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
 

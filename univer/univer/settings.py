@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework_swagger",  # Swagger
     "rest_framework",  # Django rest framework
-    "drf_yasg",  # Yet Another Swagger generator
+    "drf_spectacular",
     "corsheaders",
     "django_filters",
     "silk",
@@ -68,7 +68,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.common.CommonMiddleware",
-
 ]
 
 ROOT_URLCONF = "univer.urls"
@@ -125,14 +124,17 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 AUTH_USER_MODEL = "users.User"
 
-SWAGGER_SETTINGS = {
-    "SECURITY_DEFINITIONS": {
-        "api_key": {"type": "apiKey", "in": "header", "name": "Authorization"}
-    },
+
+SPECTACULAR_SETTINGS = {
+    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
+    # OTHER SETTINGS
 }
 
 SIMPLE_JWT = {

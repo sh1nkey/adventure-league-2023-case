@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
-from rest_framework.views import APIView
+
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -9,25 +10,9 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from django.shortcuts import redirect
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-from rest_framework import permissions
-
 from applications.views import ApplicationViewSet
 from univer.settings import DEBUG
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Episyche Technologies",
-        default_version="v1",
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
 
 application_router = DefaultRouter()
 application_router.register("", ApplicationViewSet, basename="application")
@@ -36,11 +21,8 @@ application_router.register("", ApplicationViewSet, basename="application")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("application/", include(application_router.urls)),
-    path(
-        "docs/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
-    ),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
@@ -50,4 +32,4 @@ urlpatterns = [
 ]
 
 if DEBUG:
-    urlpatterns +=  [path('silk/', include('silk.urls', namespace='silk'))]
+    urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]

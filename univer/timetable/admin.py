@@ -4,7 +4,6 @@ from django.contrib import admin
 from timetable.models import Day, Week, SubjTime
 
 
-
 @admin.register(Day)
 class DayAdmin(admin.ModelAdmin):
     list_display = ("id", "day_of_the_week")
