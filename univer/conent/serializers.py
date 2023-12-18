@@ -1,6 +1,5 @@
-from abc import ABC
-
 from rest_framework import serializers
+from rest_framework.serializers import ListSerializer
 
 from conent.models import Tasks, TaskResult, StudyMaterials
 
@@ -27,13 +26,25 @@ class StudyMaterialsSerializer(serializers.ModelSerializer):
         exclude = ["who_watched"]
 
 
-class TasksSerializer(serializers.Serializer):
+class SingleTaskSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     subject__name = serializers.CharField()
+
+class TasksSerializer(ListSerializer):
+    child = SingleTaskSerializer()
 
 
 class StudyMaterialSerializer(serializers.Serializer):
     name = serializers.CharField()
     subject = serializers.CharField()
     text = serializers.CharField()
+
+class TaskMaterialSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    type = serializers.CharField()
+    done_or_not = serializers.BooleanField()
+
+class TasksMaterialsSerializer(ListSerializer):
+    child = TaskMaterialSerializer()

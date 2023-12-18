@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from conent.serializers import (
     AnswerSerializer,
-    TasksSerializer, StudyMaterialSerializer
+    TasksSerializer, StudyMaterialSerializer, TasksMaterialsSerializer, SingleTaskSerializer
 )
 from conent.utils import (
     get_single_task,
@@ -23,6 +23,7 @@ class SubjectTaskMaterialGet(APIView):
 
     @extend_schema(
         summary='Задачи и уч. материалы у предмета',
+        responses={200:TasksMaterialsSerializer}
     )
     def get(self, request, *args, **kwargs):
         return sub_task_material_get(self.request.user, self.kwargs.get("subject_id"))
@@ -33,7 +34,7 @@ class GetSingleTask(APIView):
 
     @extend_schema(
         summary='Получить подробную информацию о задании',
-        responses={200: TasksSerializer}
+        responses={200: SingleTaskSerializer}
     )
     def get(self, request, *args, **kwargs):
         return get_single_task(self.kwargs.get("task_id"))
@@ -90,8 +91,10 @@ class GetStudyMaterial(APIView):
 
 class TasksGet(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = TasksSerializer
 
-    @extend_schema(summary='Получение невыполненных заданий')
+    @extend_schema(
+        summary='Получение невыполненных заданий',
+        responses={200: TasksSerializer}
+    )
     def get(self, request, *args, **kwargs):
         return get_tasks(self.request.user)
