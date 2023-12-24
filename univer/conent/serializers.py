@@ -31,6 +31,7 @@ class SingleTaskSerializer(serializers.Serializer):
     name = serializers.CharField()
     subject__name = serializers.CharField()
 
+
 class TasksSerializer(ListSerializer):
     child = SingleTaskSerializer()
 
@@ -40,11 +41,13 @@ class StudyMaterialSerializer(serializers.Serializer):
     subject = serializers.CharField()
     text = serializers.CharField()
 
+
 class TaskMaterialSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     type = serializers.CharField()
     done_or_not = serializers.BooleanField()
+
 
 class TasksMaterialsSerializer(ListSerializer):
     child = TaskMaterialSerializer()

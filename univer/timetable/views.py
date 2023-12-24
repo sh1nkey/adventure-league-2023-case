@@ -17,7 +17,7 @@ from users.models import StudentProfile
 class ShowTimetable(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Показ расписания')
+    @extend_schema(summary="Показ расписания")
     def get(self, request, *args, **kwargs):
         try:
             user_profile = StudentProfile.objects.get(user=self.request.user)
@@ -31,10 +31,11 @@ class ShowTimetable(APIView):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
 
+
 @extend_schema_view(
     list=extend_schema(
-            summary="Вывод всех предметов",
-        )
+        summary="Вывод всех предметов",
+    )
 )
 class SubjectsGet(ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -45,7 +46,7 @@ class SubjectsGet(ListAPIView):
 class GroupGet(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Вывод всех групп, у которых есть конкретный предмет')
+    @extend_schema(summary="Вывод всех групп, у которых есть конкретный предмет")
     def get(self, request, *args, **kwargs):
         try:
             subj_name = self.request.query_params.get("subj_name")
@@ -62,7 +63,7 @@ class GroupGet(APIView):
 class StudGet(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary='Базовая инфа о студенте')
+    @extend_schema(summary="Базовая инфа о студенте")
     def get(self, request, *args, **kwargs):
         try:
             group_name = self.request.query_params.get("group_name")
@@ -82,6 +83,6 @@ class MarkVisitors(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SubjNameSerializer(many=True)
 
-    @extend_schema(summary='Отметка посещения')
+    @extend_schema(summary="Отметка посещения")
     def post(self, request, *args, **kwargs):
         return marking_visitors(request.data)

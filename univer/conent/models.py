@@ -103,7 +103,7 @@ class StudyMaterials(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Для какой группы учебный материал",
     )
-    who_watched = models.ManyToManyField(User, null=True, blank=True)
+    who_watched = models.ManyToManyField(User, blank=True)
 
     def __str__(self):
         return f"{self.name}"

@@ -9,6 +9,7 @@ from rest_framework.response import Response
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
+
     @extend_schema(summary="Cоздаёт заявление")
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
