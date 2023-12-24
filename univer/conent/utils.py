@@ -67,8 +67,7 @@ def get_subjects_progress(user):
     try:
         group = Group.objects.get(students=user)
         subjects_data = (
-            Subjects.objects
-            .filter(groups=group)
+            Subjects.objects.filter(groups=group)
             .annotate(
                 watched_materials=Count(
                     "studymaterials", filter=Q(studymaterials__who_watched=user)

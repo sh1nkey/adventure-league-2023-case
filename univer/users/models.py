@@ -29,10 +29,7 @@ class User(AbstractUser):
 class BaseProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     sexes_choice = ((0, "Женский"), (1, "Мужской"))
-    sex = models.BooleanField(
-        verbose_name="Пол",
-        choices=sexes_choice,
-        null=True)
+    sex = models.BooleanField(verbose_name="Пол", choices=sexes_choice, null=True)
 
 
 class Group(models.Model):
@@ -65,7 +62,7 @@ class StudentProfile(BaseProfile):
         on_delete=models.CASCADE,
         verbose_name="Группа",
         help_text="К какой группе принадлежит",
-        null=True
+        null=True,
     )
     study_period = models.CharField(
         max_length=10, null=True, verbose_name="Срок обучения"

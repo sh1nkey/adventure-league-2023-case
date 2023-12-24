@@ -8,11 +8,10 @@ from timetable.models import Day
 from users.models import StudentProfile
 
 
-
 def profile_data(user):
     try:
         """Общая информация"""
-        user_profile = StudentProfile.objects.select_related('group').get(user=user)
+        user_profile = StudentProfile.objects.select_related("group").get(user=user)
         group = user_profile.group
 
         sending_data = [
@@ -29,9 +28,7 @@ def profile_data(user):
         """Количество посещений"""
         quantity_of_visits = user_profile.quantity_of_visiting
         subjs = (
-            Day.objects.filter(week__group=group)
-            .prefetch_related("subjtime")
-            .count()
+            Day.objects.filter(week__group=group).prefetch_related("subjtime").count()
         )
 
         today = datetime.now()
@@ -46,8 +43,7 @@ def profile_data(user):
 
         """Статистика по задачам"""
         tasks = (
-            Tasks.objects
-            .prefetch_related("taskresult_set")
+            Tasks.objects.prefetch_related("taskresult_set")
             .filter(groups=group)
             .annotate(
                 done_or_not=Case(
