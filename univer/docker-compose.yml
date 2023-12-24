@@ -1,0 +1,31 @@
+version: "3.3"
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+     - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=univer.settings
+
+  node:
+      # Аналогично, build из ./reactapp/dockerfile
+      build:
+        context: ./front
+        dockerfile: Dockerfile_react
+      # имя контейнера
+      container_name: reactapp
+      # рестарт
+      restart: always
+      # порты
+      ports:
+        - 3000:3000
+      # команда при запуске
+      command: npm run dev
+      # Зависимость. нет смысла ноде, если некому отдать ей данные. поэтому сначала стартуем сервис django, а за ней node
+      depends_on:
+        - django
+      # Сеть та же, все контейнеры должны крутиться в однйо сети чтобы видеть друг друга.
