@@ -41,7 +41,7 @@
  
  Помимо этого данное веб-приложение содержит базвую документацию в swagger.
 
-## Схема базы данных
+## Базовая схема базы данных
 https://dbdiagram.io/d/657f330956d8064ca02ffaf7
 ![Untitled](https://github.com/sh1nkey/adventure-league-2023-case/assets/110509023/19fcd115-b2b8-4c81-9912-2b90b45cf4d1)
 
