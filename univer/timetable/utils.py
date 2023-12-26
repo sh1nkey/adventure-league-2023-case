@@ -16,6 +16,7 @@ def get_timetable(user_profile, if_even):
 
     day_schedule = defaultdict(list)
 
+    """Заносит имя предмета и времени в более читаемом формате"""
     for entry in days_with_subj_times:
         day_of_the_week = DAYS_OF_THE_WEEK_CHOICE[entry["day_of_the_week"] - 1][1]
         subject_name = entry["part_of_timetable__subject__name"]

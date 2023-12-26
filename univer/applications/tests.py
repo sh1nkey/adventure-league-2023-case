@@ -1,13 +1,12 @@
 import json
 from datetime import datetime
-from typing import List
 
 import pytest
 from django.urls import reverse
 
 from applications.models import Application
 
-companies_url = reverse("application-list")
+get_url = reverse("application-list")
 pytestmark = pytest.mark.django_db
 
 
@@ -28,9 +27,9 @@ def create_application_record():
     return application
 
 
-# ---------- Test GET companies ----------
+# ---------- Test GET  ----------
 def test_get_applications_should_return_empty_list(client) -> None:
-    response = client.get(companies_url)
+    response = client.get(get_url)
     assert response.status_code == 200
     assert json.loads(response.content) == []
 
@@ -38,7 +37,7 @@ def test_get_applications_should_return_empty_list(client) -> None:
 def test_get_applications_should_return_not_empty_list(
     client, create_application_record
 ) -> None:
-    response = client.get(companies_url)
+    response = client.get(get_url)
     content = json.loads(response.content)
 
     assert response.status_code == 200
@@ -47,3 +46,33 @@ def test_get_applications_should_return_not_empty_list(
     assert content[0]["FIO"] == "Иванов Иван Иванович"
 
 
+# ---------- Test POST  ----------
+def test_create_offer_should_succeed(client):
+    response = client.post(
+        get_url,
+        data={
+            "FIO": "string",
+            "FIO_manager": "string",
+            "name_of_division": "string",
+            "current_post": "string",
+            "personal_achievements": "string",
+            "motivational_letter": "string",
+            "work_experience": 1,
+            "time_created": "2023-12-24T10:45:48.068Z",
+            "approved": False,
+            "watched": False,
+        },
+    )
+
+    assert response.status_code == 201
+    assert Application.objects.all().count() == 1
+
+
+# ---------- Test DELETE  ----------
+def test_delete_offer_should_succeed(client, create_application_record):
+    url = reverse("application-detail", kwargs={"pk": 1})
+
+    response = client.delete(url)
+
+    assert response.status_code == 204
+    assert Application.objects.all().count() == 0

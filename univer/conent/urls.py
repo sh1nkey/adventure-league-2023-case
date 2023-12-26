@@ -13,7 +13,7 @@ urlpatterns = [
     path(
         "tasks-and-materials/<int:subject_id>",
         SubjectTaskMaterialGet.as_view(),
-        name="get-tasks",
+        name="get-tasks-materials",
     ),
     path("task/<int:task_id>", GetSingleTask.as_view(), name="get-task"),
     path(
