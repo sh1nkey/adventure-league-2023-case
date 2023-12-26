@@ -32,6 +32,7 @@ def send_answers(data, user, task_id):
 
         questions = list(Questions.objects.filter(task=task).order_by("id"))
 
+        """Заносит ответы пользователя в БД"""
         with transaction.atomic():
             answers = [
                 Answer(
@@ -118,7 +119,8 @@ def sub_task_material_get(user, subject_id):
         student_group = student_profile.group
 
         tasks = (
-            Tasks.objects.prefetch_related("taskresult_set")
+            Tasks.objects
+            .prefetch_related("taskresult_set")
             .filter(subject_id=subject_id, groups=student_group)
             .annotate(
                 done_or_not=Case(
@@ -194,6 +196,8 @@ def get_tasks(user):
         user_profile = StudentProfile.objects.select_related("group").get(user=user)
 
         tasks_with_results = TaskResult.objects.values("task_id").distinct()
+
+        """Получает невыполненный задачи у группы"""
         queryset = list(
             Tasks.objects.filter(groups=user_profile.group)
             .select_related("subject__name")
