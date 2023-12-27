@@ -1,6 +1,6 @@
 import pytest
 
-from conent.models import Subjects, Tasks, StudyMaterials
+from conent.models import Subjects, Tasks, StudyMaterials, Questions
 from users.models import User, Group, StudentProfile
 from users.views import get_tokens_for_user
 
@@ -72,3 +72,19 @@ def create_task_and_study_material(log_in_user, subject_create, group_create):
         'subject': subject_create,
         'user': log_in_user['token']
     }
+
+
+@pytest.fixture
+def create_questions_for_task(create_task_record):
+    task = create_task_record
+    Questions.objects.create(
+        text='Ты можешь сказать да?',
+        right_answer='Да.',
+        task=task
+    )
+    Questions.objects.create(
+        text='Это третий вопрос?',
+        right_answer='Нет.',
+        task=task
+    )
+    return create_task_record
