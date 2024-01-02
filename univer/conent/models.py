@@ -26,6 +26,9 @@ class Tasks(models.Model):
     subject = models.ForeignKey(
         Subjects, on_delete=models.CASCADE, verbose_name="Предмет", null=True
     )
+    file = models.FileField(
+        upload_to="files/", null=True, blank=True, verbose_name="Файл"
+    )
 
     def __str__(self):
         return f"{self.name}"
@@ -97,7 +100,9 @@ class StudyMaterials(models.Model):
     subject = models.ForeignKey(
         Subjects, on_delete=models.CASCADE, verbose_name="Предмет"
     )
-    # сделать поле с файлом
+    file = models.FileField(
+        upload_to="files/", null=True, blank=True, verbose_name="Файл"
+    )
     group = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,
