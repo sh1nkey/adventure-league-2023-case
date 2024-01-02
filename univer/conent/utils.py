@@ -119,8 +119,7 @@ def sub_task_material_get(user, subject_id):
         student_group = student_profile.group
 
         tasks = (
-            Tasks.objects
-            .prefetch_related("taskresult_set")
+            Tasks.objects.prefetch_related("taskresult_set")
             .filter(subject_id=subject_id, groups=student_group)
             .annotate(
                 done_or_not=Case(
@@ -185,6 +184,8 @@ def watch_material(user, material_id):
             "subject": material.subject_name,
             "text": material.text,
         }
+        if material.file:
+            send_data["file"] = material.file.url
 
         return JsonResponse(send_data, status=200)
     except Exception as e:

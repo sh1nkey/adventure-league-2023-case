@@ -19,14 +19,22 @@ class Application(models.Model):
     motivational_letter = models.TextField(
         max_length=1000, verbose_name="Мотивационное письмо"
     )
+    email = models.EmailField(
+        max_length=50,
+        verbose_name="Электронная почта",
+        help_text="На какую почту будут отсылаться email сообщения",
+        null=True,
+    )
 
     work_experience = models.IntegerField(verbose_name="Стаж работы в месяцах")
     time_created = models.DateTimeField(
         default=datetime.datetime.now(), verbose_name="Время подачи заявки"
     )
 
-    approved = models.BooleanField(default=0, verbose_name="Принят ли в университет")
-    watched = models.BooleanField(default=0, verbose_name="Просмотрена ли анкета")
+    approved = models.BooleanField(
+        default=False, verbose_name="Принят ли в университет"
+    )
+    watched = models.BooleanField(default=False, verbose_name="Просмотрена ли анкета")
 
     class Meta:
         verbose_name = "Заявка"
