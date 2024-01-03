@@ -5,7 +5,7 @@ import pytest
 from django.urls import reverse
 
 from users.models import User
-from ..models import Subjects
+from conent.models import Subjects
 from .fixtures import (
     create_task_record,
     log_in_user,
