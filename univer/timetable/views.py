@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -17,7 +17,14 @@ from users.models import StudentProfile
 class ShowTimetable(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(summary="Показ расписания")
+    @extend_schema(
+        summary="Показ расписания",
+        parameters=[
+            OpenApiParameter(
+                name="if_even", type=bool, description="Учитывать только четные числа"
+            )
+        ],
+    )
     def get(self, request, *args, **kwargs):
         try:
             user_profile = StudentProfile.objects.get(user=self.request.user)

@@ -18,6 +18,8 @@ db.sqlite3
 
 # Static files
 /static/
+/univer/static/
+/univer/files/
 
 # Media files
 /media/

@@ -1,31 +1,14 @@
 import pytest
 
-from conent.models import Subjects, Tasks, StudyMaterials, Questions
-from users.models import User, Group, StudentProfile
-from users.views import get_tokens_for_user
-
-
-@pytest.fixture
-def subject_create() -> Subjects:
-    return Subjects.objects.create(name="Тестовый предмет")
-
-
-@pytest.fixture
-def group_create() -> Group:
-    return Group.objects.create(name="Тестовая группа")
+from conent.models import Tasks, StudyMaterials, Questions
+from users.models import StudentProfile
+from ..common_fixtures import log_in_user, subject_create, group_create
 
 
 @pytest.fixture
 def create_task_record(subject_create):
     task = Tasks.objects.create(name="Example Task", subject=subject_create)
     return task
-
-
-@pytest.fixture
-def log_in_user():
-    user = User.objects.create(username="test_user", role=2)
-    token = get_tokens_for_user(user)["access"]
-    return {"user": user, "token": token}
 
 
 @pytest.fixture
